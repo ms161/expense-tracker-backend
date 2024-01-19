@@ -1,6 +1,11 @@
 
 const User = require('../models/user')
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+
+function generateAcessToken(id, name) {
+    return jwt.sign({ userId: id, name: name },'secretkey')
+}
 exports.signUp = async (req, res) => {
     try {
         const name = req.body.name
@@ -38,7 +43,7 @@ exports.login = async (req, res) => {
             bcrypt.compare(password, userPassword, (err, result) => {
 
                 if (result) {
-                    return res.status(200).json({ message: 'User login sucessful' })
+                    return res.status(200).json({ message: 'User login sucessful', token: generateAcessToken(user[0].dataValues.id, user[0].dataValues.name) })
                 }
                 else {
                     return res.status(401).json({ message: 'User not authorized' })
