@@ -3,7 +3,7 @@ const User = require('../models/user')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
-function generateAcessToken(id, name) {
+exports.generateAcessToken= (id, name)=> {
     return jwt.sign({ userId: id, name: name },'secretkey')
 }
 exports.signUp = async (req, res) => {
