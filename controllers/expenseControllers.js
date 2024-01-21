@@ -28,6 +28,14 @@ exports.postExpense = async (req, res) => {
         //     description,
         //     category,
         // })
+        const totalExpense = Number(req.user.totalExpense)+ Number(amount);
+        console.log('amount',totalExpense);
+        await User.update({
+            totalExpense: totalExpense
+        },{
+            where:{id: req.user.id},
+        
+        })
 
         res.status(201).json(resp)
 
