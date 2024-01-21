@@ -7,7 +7,8 @@ const app=express()
 //ROUTES
 const user=require('./routes/userRoutes')
 const expense=require('./routes/expenseRoutes')
-const purchase=require('./routes/purchase')
+const purchase=require('./routes/purchaseRoutes')
+const premium=require('./routes/premiumRoutes')
 //ROUTES
 const sequelize=require('./util/database')
 
@@ -29,6 +30,7 @@ Order.belongsTo(User)
 app.use(user)
 app.use('/expense',expense)
 app.use('/purchase',purchase)
+app.use('/premium',premium)
 
 sequelize
 .sync({force:false})

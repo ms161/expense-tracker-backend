@@ -3,6 +3,12 @@ const Order = require('../models/orders')
 const userController = require('./userController');
 require('dotenv').config();
 
+const jwt = require('jsonwebtoken')
+
+const generateAcessToken= (id, name,ispremiumuser)=> {
+    return jwt.sign({ userId: id, name: name ,ispremiumuser:ispremiumuser},'secretkey')
+}
+
 exports.purchasePremium = async (req, res) => {
     try {
         console.log('keyid',process.env.RAZORPAY_KEY_ID)
@@ -14,7 +20,7 @@ exports.purchasePremium = async (req, res) => {
 
         rzp.orders.create({amount, currency: "INR"}, (err, order) => {
             if(err) {
-                console.log('we got a error >>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+                console.log('we got a err')
                 throw new Error(JSON.stringify(err));
             }
             req.user.createOrder({ orderid: order.id, status: 'PENDING'}).then(() => {
@@ -26,7 +32,7 @@ exports.purchasePremium = async (req, res) => {
         })
     } catch(err){
         console.log(err);
-        res.status(403).json({ message: 'Sometghing went wrong', error: err})
+        res.status(403).json({ message: 'Something went wrong', error: err})
     }
 }
 
@@ -37,16 +43,16 @@ exports.updateTransactionStatus = async (req, res ) => {
         const order  = await Order.findOne({where : {orderid : order_id}}) 
         const promise1 =  order.update({ paymentid: payment_id, status: 'SUCCESSFUL'}) 
         const promise2 =  req.user.update({ ispremiumuser: true }) 
-
+console.log('update transaction c>>>>>>>>>>>>')
         Promise.all([promise1, promise2]).then(()=> {
             return res.status(202).json({success: true, message: "Transaction Successful",
-            token: userController.generateAcessToken(userId,undefined , true) });
+            token: generateAcessToken(userId,undefined , true) });
         }).catch((error ) => {
             throw new Error(error)
         }) 
     } catch (err) {
         console.log(err);
-        res.status(403).json({ errpr: err, message: 'Sometghing went wrong' })
+        res.status(403).json({ error: err, message: 'Something went wrong' })
     }
 }
 
@@ -61,6 +67,6 @@ exports.updateFailedTransactionStatus = async (req, res ) => {
             token: userController.generateToken(userId,undefined ,false) });
     } catch (err) {
         console.log(err);
-        res.status(403).json({ errpr: err, message: 'Sometghing went wrong' })
+        res.status(403).json({ error: err, message: 'Something went wrong' })
     }
 }
