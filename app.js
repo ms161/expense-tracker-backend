@@ -13,13 +13,19 @@ const passwordRoutes = require('./routes/passwordRoutes')
 //ROUTES
 const sequelize = require('./util/database')
 
+//MODELS
+
 const User = require('./models/user')
 const Order = require('./models/orders')
-
 const Expense = require('./models/userExpense')
+const ForgotPasswordRequests=require('./models/ForgotPasswordRequests')
+//MODELS
 
 app.use(bodyParser.json())
 app.use(cors())
+
+//RELATIONS
+
 
 User.hasMany(Expense)
 Expense.belongsTo(User)
@@ -27,6 +33,10 @@ Expense.belongsTo(User)
 User.hasMany(Order)
 Order.belongsTo(User)
 
+User.hasMany(ForgotPasswordRequests)
+ForgotPasswordRequests.belongsTo(User)
+
+//RELATIONS
 app.use(userRoutes)
 app.use('/expense', expenseRoutes)
 app.use('/purchase', purchaseRoutes)
