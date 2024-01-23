@@ -2,6 +2,7 @@ const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const app = express()
+const sequelize = require('./util/database')
 
 
 //ROUTES
@@ -11,22 +12,18 @@ const purchaseRoutes = require('./routes/purchaseRoutes')
 const premiumRoutes = require('./routes/premiumRoutes')
 const passwordRoutes = require('./routes/passwordRoutes')
 //ROUTES
-const sequelize = require('./util/database')
 
 //MODELS
-
 const User = require('./models/user')
 const Order = require('./models/orders')
 const Expense = require('./models/userExpense')
-const ForgotPasswordRequests=require('./models/ForgotPasswordRequests')
+const ForgotPasswordRequests = require('./models/ForgotPasswordRequests')
 //MODELS
 
 app.use(bodyParser.json())
 app.use(cors())
 
 //RELATIONS
-
-
 User.hasMany(Expense)
 Expense.belongsTo(User)
 
@@ -35,7 +32,6 @@ Order.belongsTo(User)
 
 User.hasMany(ForgotPasswordRequests)
 ForgotPasswordRequests.belongsTo(User)
-
 //RELATIONS
 app.use(userRoutes)
 app.use('/expense', expenseRoutes)

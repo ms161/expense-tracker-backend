@@ -65,7 +65,7 @@ exports.resetPassword=async(req,res)=>{
     const pass=await ForgotPasswordRequests.findOne({where:{id:id}})
     console.log(pass.dataValues)
     if(pass.dataValues.active){
-        // await pass.update({active:false})
+        await pass.update({active:false})
         res.status(201).send(`<html>
         <style>
         @import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap');
