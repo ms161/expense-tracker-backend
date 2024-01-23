@@ -62,7 +62,7 @@ exports.getAllExpenses = async (req, res) => {
 
         const page = +req.query.page || 1;
         const pageSize = +req.query.pageSize || 2;
-
+console.log(pageSize,'>>>>>>>>>>>>>>>>>',page) 
         const expenses = await req.user.countExpenses();
         console.log(expenses)
         const data = await req.user.getExpenses({
