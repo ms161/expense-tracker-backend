@@ -1,5 +1,5 @@
 const sequelize = require('../util/database');
-const User=require('../models/user')
+const User = require('../models/user')
 const Expense = require('../models/userExpense')
 
 function Invalidstring(str) {
@@ -11,10 +11,10 @@ function Invalidstring(str) {
 }
 
 exports.postExpense = async (req, res) => {
-   const t = await sequelize.transaction()
+    const t = await sequelize.transaction()
     try {
-       
-       
+
+
         const { amount, description, category } = req.body
         console.log('this is id', req.user)
         if (Invalidstring(amount) || Invalidstring(description) || Invalidstring(category)) {
@@ -48,9 +48,9 @@ exports.postExpense = async (req, res) => {
 
     }
     catch (err) {
-     
-            await t.rollback();
-      
+
+        await t.rollback();
+
         console.log(err)
         res.json({ error: err })
     }
@@ -59,11 +59,31 @@ exports.postExpense = async (req, res) => {
 
 exports.getAllExpenses = async (req, res) => {
     try {
-        const expenses = await Expense.findAll({ where: { userId: req.user.id } })
+
+        const page = +req.query.page || 1;
+        const pageSize = +req.query.pageSize || 2;
+
+        const expenses = await req.user.countExpenses();
+        console.log(expenses)
+        const data = await req.user.getExpenses({
+            offset: (page - 1) * pageSize,
+            limit: pageSize,
+            order: [['id', 'DESC']]
+        })
+        // const expenses = await Expense.findAll({ where: { userId: req.user.id } })
         //MAGIC ASSOCIATION METHOD
         // const expenses=await req.user.getExpense()
         console.log('this is expenses', expenses)
-        res.status(200).json(expenses)
+        // res.status(200).json(expenses)
+        res.status(200).json({
+            allExpenses: data,
+            currentPage: page,
+            hasNextPage: pageSize * page < expenses,
+            nextPage: page + 1,
+            hasPreviousPage: page > 1,
+            previousPage: page - 1,
+            lastPage: Math.ceil(expenses / pageSize)
+        })
     }
     catch (err) {
         console.log(err)
@@ -73,20 +93,20 @@ exports.getAllExpenses = async (req, res) => {
 }
 
 exports.deleteExpense = async (req, res) => {
-    const t = await sequelize.transaction(); 
+    const t = await sequelize.transaction();
     try {
         const id = req.params.id
-     
-        const price = await Expense.findAll({where:{id:id}});
+
+        const price = await Expense.findAll({ where: { id: id } });
 
         const resp = await Expense.destroy({ where: { id: id, userId: req.user.id } })
         const totalExpense = Number(req.user.totalExpense) - Number(price[0].amount);
 
         await User.update({
             totalExpense: totalExpense
-        },{
-            where:{id: req.user.id},
-            transaction : t
+        }, {
+            where: { id: req.user.id },
+            transaction: t
         })
 
         await t.commit();
@@ -96,6 +116,6 @@ exports.deleteExpense = async (req, res) => {
         await t.rollback();
         console.log(err)
 
-        res.status(500).json({message:err});
+        res.status(500).json({ message: err });
     }
 }
