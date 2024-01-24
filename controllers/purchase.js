@@ -6,7 +6,7 @@ require('dotenv').config();
 const jwt = require('jsonwebtoken')
 
 const generateAcessToken= (id, name,ispremiumuser)=> {
-    return jwt.sign({ userId: id, name: name ,ispremiumuser:ispremiumuser},'secretkey')
+    return jwt.sign({ userId: id, name: name ,ispremiumuser:ispremiumuser},process.env.TOKEN_SECRET)
 }
 
 exports.purchasePremium = async (req, res) => {

@@ -3,7 +3,7 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const app = express()
 const sequelize = require('./util/database')
-
+const helmet=require('helmet')
 
 //ROUTES
 const userRoutes = require('./routes/userRoutes')
@@ -19,7 +19,7 @@ const Order = require('./models/orders')
 const Expense = require('./models/userExpense')
 const ForgotPasswordRequests = require('./models/ForgotPasswordRequests')
 //MODELS
-
+app.use(helmet())
 app.use(bodyParser.json())
 app.use(cors())
 
@@ -43,7 +43,7 @@ sequelize
     .sync({ force: false })
     .then(() => {
 
-        app.listen(5000)
+        app.listen(process.env.PORT || 5000)
     })
     .catch((err) => {
         console.log(err)
