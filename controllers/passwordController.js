@@ -6,8 +6,6 @@ const UUID = require('uuid');
 const ForgotPasswordRequests = require('../models/ForgotPasswordRequests')
 require('dotenv').config()
 
-
-
 exports.forgetPassword = async (req, res) => {
     console.log(req.body.email)
     try {

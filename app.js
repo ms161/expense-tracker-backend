@@ -1,9 +1,15 @@
 const express = require('express')
+const dotenv=require('dotenv')
+dotenv.config()
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const app = express()
 const sequelize = require('./util/database')
 const helmet=require('helmet')
+const morgan=require('morgan')
+const fs=require('fs')
+const path=require('path')
+
 
 //ROUTES
 const userRoutes = require('./routes/userRoutes')
@@ -19,7 +25,11 @@ const Order = require('./models/orders')
 const Expense = require('./models/userExpense')
 const ForgotPasswordRequests = require('./models/ForgotPasswordRequests')
 //MODELS
+
+const accessLogStream=fs.createWriteStream(path.join(__dirname,'access.log'),{flags:'a'})
+
 app.use(helmet())
+app.use(morgan('combined',{stream:accessLogStream}))
 app.use(bodyParser.json())
 app.use(cors())
 
